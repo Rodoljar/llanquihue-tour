@@ -1,0 +1,5 @@
+Ruta Gastronomica Frutillar;Gastronomico;25000
+Paseo Lacustre Lago Llanquihue;Lacustre;18000
+Trekking Volcan Osorno;Aventura;35000
+Tour Cultural Chiloe Mitos y leyendas;Cultural;45000
+Circuito Saltos del Petrohue;Lacustre;22000
