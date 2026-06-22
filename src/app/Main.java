@@ -1,49 +1,46 @@
-package ui;
+package app;
 
-import data.GestorDatos;
 import model.Tour;
+import util.GestorDatos;
+import service.TourService;
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        // 1. Instanciamos el gestor de datos
+        // 1. Instanciamos el gestor de datos (ahora desde el paquete util)
         GestorDatos gestor = new GestorDatos();
 
         // 2. Definimos la ruta de nuestro archivo de texto
-        // "resources/tours.txt" le dice a Java que busque en la carpeta de recursos
         String ruta = "resources/tours.txt";
 
         // 3. Cargamos los datos del archivo en la lista dinámica
         ArrayList<Tour> todosLosTours = gestor.leerToursDesdeArchivo(ruta);
 
-        // --- PARTE 1: MOSTRAR TODOS LOS ELEMENTOS (RECORRIDO) ---
+        // 4. Inicializamos el servicio con la lista cargada
+        TourService servicio = new TourService(todosLosTours);
+
+        // --- PASO 3: MOSTRAR TODOS LOS ELEMENTOS (RECORRIDO AUTOMATIZADO) ---
         System.out.println("=============================================");
         System.out.println("    CATÁLOGO COMPLETO - LLANQUIHUE TOUR      ");
         System.out.println("=============================================");
-        for (Tour t : todosLosTours) {
-            System.out.println(t);
-        }
+        servicio.mostrarCatalogo();
         System.out.println();
 
-        // --- PARTE 2 Y 3: FILTRAR Y MOSTRAR RESULTADOS ---
-        // Condición de ejemplo: Queremos buscar sólo los tours de tipo "Lacustre"
+        // --- PASO 3: BÚSQUEDA Y FILTRADO ---
         String tipoBuscado = "Lacustre";
 
         System.out.println("=============================================");
         System.out.println("   FILTRANDO TOURS DE TIPO: " + tipoBuscado.toUpperCase());
         System.out.println("=============================================");
 
-        int contadorFiltro = 0;
-        for (Tour t : todosLosTours) {
-            // Usamos .equalsIgnoreCase para comparar textos sin importar mayúsculas/minúsculas
-            if (t.getTipo().equalsIgnoreCase(tipoBuscado)) {
-                System.out.println(t);
-                contadorFiltro++;
-            }
-        }
+        ArrayList<Tour> toursFiltrados = servicio.filtrarPorTipo(tipoBuscado);
 
-        if (contadorFiltro == 0) {
+        if (toursFiltrados.isEmpty()) {
             System.out.println("No se encontraron tours de tipo: " + tipoBuscado);
+        } else {
+            for (Tour t : toursFiltrados) {
+                System.out.println(t);
+            }
         }
         System.out.println("=============================================");
     }
