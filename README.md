@@ -1,29 +1,35 @@
-# Llanquihue Tour App
+# Llanquihue Tour App - Semana 6
 
-## Descripción del Proyecto
-Este proyecto es una aplicación de consola desarrollada en Java para la agencia de turismo **Llanquihue Tour**, ubicada en la Región de Los Lagos.
+Estructura de software digital para la agencia de turismo **Llanquihue Tour**, desarrollada en Java aplicando los principios de la Programación Orientada a Objetos (POO).
 
-El sistema resuelve la necesidad de gestionar eficientemente la información de las rutas turísticas. En esta quinta semana, el proyecto ha sido refactorizado bajo principios de **organización modular**, implementando una arquitectura de capas, encapsulamiento robusto con validaciones de datos mediante control de excepciones (`try-catch` e `IllegalArgumentException`) y operaciones automatizadas de recorrido y filtrado utilizando colecciones dinámicas (`ArrayList`).
+##  Mejoras e Implementaciones de esta Semana
 
-## Estructura de Paquetes y Clases
-El código fuente se encuentra organizado dentro del directorio `src` bajo los siguientes paquetes funcionales:
+En esta sexta semana se migró el modelo hacia una arquitectura jerárquica y modular, resolviendo directamente las observaciones de la evaluación anterior:
 
-* **`model`**
-    * `Tour.java`: Clase molde que representa un tour turísticos. Cuenta con atributos privados (`nombre`, `tipo`, `precio`), constructores, métodos *getters/setters* con lógica de validación defensiva y la sobreescritura del método `toString()`.
-* **`util`**
-    * `GestorDatos.java`: Clase utilitaria encargada de la persistencia. Realiza la lectura del archivo plano `.txt`, procesa las líneas separadas por `;` y maneja de forma segura los errores de conversión o de lógica mediante bloques `try-catch`.
-* **`service`**
-    * `TourService.java`: Capa de negocio que encapsula la colección `ArrayList<Tour>` y provee las operaciones automatizadas de recorrido completo de catálogo y filtrado/búsqueda simple por tipo.
-* **`app`**
-    * `Main.java`: Punto de entrada de la aplicación. Coordina la carga de datos, inicializa los servicios y despliega los resultados en la consola.
+1. **Jerarquía de Clases (Herencia Simple):** Se implementó una superclase base `ServicioTuristico` de la cual extienden tres subclases especializadas utilizando la palabra clave `extends` y constructores alineados con `super()`:
+    * `RutaGastronomica` (Atributo exclusivo: `numeroDeParadas`)
+    * `PaseoLacustre` (Atributo exclusivo: `tipoEmbarcacion`)
+    * `ExcursionCultural` (Atributo exclusivo: `lugarHistorico`)
+2. **Composición entre Clases (Corrección de Falencia):** Para asegurar una relación compuesta real en el dominio, se integró la clase `GuiaTuristico` como atributo protegido de la clase madre. De esta forma, todo servicio "tiene un" guía asignado de manera obligatoria.
+3. **Encapsulamiento y Buenas Prácticas:** Atributos protegidos/privados, métodos accesores (Getters/Setters) y sobreescritura estricta del método `@Override toString()` en cada nivel de la jerarquía.
+4. **Organización por Capas (Paquetes):**
+    * `model/`: Entidades de dominio, herencia y composición.
+    * `data/`: Lógica de persistencia de prueba estática (`GestorServicios`).
+    * `ui/`: Punto de entrada de la aplicación (`Main`) con lógica de filtrado por consola utilizando discriminación de tipos.
 
-## Recursos Externos
-* `resources/tours.txt`: Archivo de texto que actúa como base de datos del sistema, estructurado en formato de texto plano separado por puntos y comas (`;`).
+---
 
-## Instrucciones para Ejecutar el Programa
-1. Asegúrate de tener instalado **Java JDK 11 o superior** (el proyecto fue compilado exitosamente con JDK 26).
-2. Clona o descarga este repositorio.
-3. Abre el proyecto en tu IDE de preferencia (como **IntelliJ IDEA**).
-4. Verifica que el archivo `tours.txt` se encuentre dentro de la carpeta `resources/` en la raíz del proyecto.
-5. Dirígete al paquete `app` dentro de `src/`.
-6. Haz clic derecho sobre la clase `Main.java` y selecciona **Run 'Main.main()'** para ejecutar la aplicación por consola.
+##  Estructura del Proyecto
+
+```text
+src/
+├── data/
+│   └── GestorServicios.java
+├── model/
+│   ├── ExcursionCultural.java
+│   ├── GuiaTuristico.java
+│   ├── PaseoLacustre.java
+│   ├── RutaGastronomica.java
+│   └── ServicioTuristico.java
+└── ui/
+    └── Main.java
