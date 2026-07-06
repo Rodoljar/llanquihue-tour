@@ -17,5 +17,16 @@ public class RutaGastronomica extends ServicioTuristico {
     public String toString() {
         // Usamos super.toString()
         return "[Ruta Gastronómica] " + super.toString() + " | N° de Paradas: " + numeroDeParadas;
+
     }
+
+    @Override
+    public void mostrarInformacion() {
+        // Llama a la base (imprime nombre, precio, duración, guía)
+        super.mostrarInformacion();
+        // Le pega el atributo exclusivo y hace el salto de línea definitivo
+        System.out.println(" | N° de Paradas: " + numeroDeParadas);
+    }
+
+
 }

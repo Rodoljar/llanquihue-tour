@@ -32,4 +32,13 @@ public class ServicioTuristico {
         // Sumamos el valor formateado al toString común
         return "Nombre: " + nombre + " | Duración: " + duracionHoras + " hrs | Precio: $" + precio + " | Guía: " + guia;
     }
+
+
+    public void mostrarInformacion() {
+        System.out.print("[Servicio] Nombre: " + nombre +
+                " | Duración: " + duracionHoras + " hrs" +
+                " | Precio: $" + precio +
+                " | Guía: " + (guia != null ? guia.getNombre() : "Sin guía"));
+    }
+
 }

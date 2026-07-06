@@ -1,35 +1,26 @@
-# Llanquihue Tour App - Semana 6
+# Llanquihue Tour App - Semana 7
 
-Estructura de software digital para la agencia de turismo **Llanquihue Tour**, desarrollada en Java aplicando los principios de la Programación Orientada a Objetos (POO).
+Este proyecto corresponde a la entrega de la Semana 7, donde refactoricé el sistema de Llanquihue Tour para aplicar colecciones dinámicas y polimorfismo puro, eliminando las estructuras fijas que veníamos usando.
 
-##  Mejoras e Implementaciones de esta Semana
+##  Cambios e Implementaciones de esta Semana
 
-En esta sexta semana se migró el modelo hacia una arquitectura jerárquica y modular, resolviendo directamente las observaciones de la evaluación anterior:
-
-1. **Jerarquía de Clases (Herencia Simple):** Se implementó una superclase base `ServicioTuristico` de la cual extienden tres subclases especializadas utilizando la palabra clave `extends` y constructores alineados con `super()`:
-    * `RutaGastronomica` (Atributo exclusivo: `numeroDeParadas`)
-    * `PaseoLacustre` (Atributo exclusivo: `tipoEmbarcacion`)
-    * `ExcursionCultural` (Atributo exclusivo: `lugarHistorico`)
-2. **Composición entre Clases (Corrección de Falencia):** Para asegurar una relación compuesta real en el dominio, se integró la clase `GuiaTuristico` como atributo protegido de la clase madre. De esta forma, todo servicio "tiene un" guía asignado de manera obligatoria.
-3. **Encapsulamiento y Buenas Prácticas:** Atributos protegidos/privados, métodos accesores (Getters/Setters) y sobreescritura estricta del método `@Override toString()` en cada nivel de la jerarquía.
-4. **Organización por Capas (Paquetes):**
-    * `model/`: Entidades de dominio, herencia y composición.
-    * `data/`: Lógica de persistencia de prueba estática (`GestorServicios`).
-    * `ui/`: Punto de entrada de la aplicación (`Main`) con lógica de filtrado por consola utilizando discriminación de tipos.
+* **Migración a Listas Dinámicas (`List` y `ArrayList`):** Eliminé los arreglos estáticos del `GestorServicios` que tenían un tamaño fijo. Ahora los tours se guardan en un `ArrayList<ServicioTuristico>`, lo que permite agregar la cantidad de servicios que queramos sin que se caiga el sistema.
+* **Polimorfismo Real (`@Override`):** Modifiqué el método `mostrarInformacion()` en la superclase `ServicioTuristico`. Las subclases (`RutaGastronomica`, `PaseoLacustre` y `ExcursionCultural`) ahora lo sobrescriben con sus atributos propios.
+* **Bucle Único sin `instanceof`:** Para cumplir de forma estricta con la pauta, el catálogo se recorre usando un solo bucle `for-each`. Eliminé por completo el uso de `instanceof`. El sistema ahora es capaz de reconocer el tipo de objeto en tiempo de ejecución de forma automática.
+* **Diseño de Consola:** Mantuve el orden visual por secciones de la semana pasada de forma dinámica. El código detecta mediante `.getClass()` cuándo cambia el tipo de servicio e imprime los títulos correspondientes en español, sin alterar el flujo del bucle único.
 
 ---
 
-##  Estructura del Proyecto
+##  Organización del Código
 
-```text
-src/
-├── data/
-│   └── GestorServicios.java
-├── model/
-│   ├── ExcursionCultural.java
-│   ├── GuiaTuristico.java
-│   ├── PaseoLacustre.java
-│   ├── RutaGastronomica.java
-│   └── ServicioTuristico.java
-└── ui/
-    └── Main.java
+* `src/model/`: Contiene la superclase `ServicioTuristico`, las subclases de los tours y la clase `GuiaTuristico` (aplicando composición).
+* `src/data/`: Contiene la clase `GestorServicios.java`, que ahora inicializa la lista dinámica con 6 servicios de prueba (cumpliendo con el mínimo de 5 de la pauta) y ejecuta el recorrido polimórfico.
+* `src/ui/`: Contiene la clase `Main.java` que da el arranque a la aplicación.
+
+---
+
+##  Cómo Ejecutar
+1. Abrir el proyecto en IntelliJ IDEA (configurado con JDK 26).
+2. Ir a `src/ui/Main.java`.
+3. Hacer clic derecho y seleccionar **Run 'Main.main()'**.
+4. La consola desplegará el catálogo completo ordenado limpiamente por secciones.
