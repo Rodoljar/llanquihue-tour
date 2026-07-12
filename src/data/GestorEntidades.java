@@ -123,6 +123,28 @@ public class GestorEntidades {
     }
 
     public void desplegarResumenEntidades() {
-        System.out.println("--- Resumen de Datos Actualizado en el Archivo " + ARCHIVO_TXT + " ---");
+        System.out.println("\n==========================================================================");
+        System.out.println("                LLANQUIHUE TOUR - REGISTRO GENERAL UNIFICADO              ");
+        System.out.println("                     (Monitoreo por Consola Activo)                       ");
+        System.out.println("==========================================================================");
+
+        for (Registrable entidad : listaEntidades) {
+            // Llama al método polimórfico mostrarResumen() de cada objeto
+            entidad.mostrarResumen();
+
+            // Alertas y tips adicionales por consola según el tipo
+            if (entidad instanceof Vehiculo) {
+                Vehiculo v = (Vehiculo) entidad;
+                if (v.getCapacidadPasajeros() > 15) {
+                    System.out.println("   --> [AVISO]: Vehículo mayor. Requiere conductor con Licencia Profesional.");
+                }
+            } else if (entidad instanceof RutaGastronomica) {
+                System.out.println("   --> [TIPS]: Recordar a los clientes llevar efectivo para propinas opcionales.");
+            } else if (entidad instanceof PaseoLacustre) {
+                System.out.println("   --> [SEGURIDAD]: Obligatorio el uso de chaleco salvavidas en toda la navegación.");
+            }
+            System.out.println("--------------------------------------------------------------------------");
+        }
+        System.out.println(">>> Estado de datos respaldado con éxito en: " + ARCHIVO_TXT + "\n");
     }
 }
