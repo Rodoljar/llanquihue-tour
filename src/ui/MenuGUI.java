@@ -164,13 +164,13 @@ public class MenuGUI extends JFrame {
     public void actualizarTabla() {
         tableModel.setRowCount(0);
 
-        // Listas auxiliares para separar por categorías y forzar un orden visual limpio
+
         List<Registrable> guias = new ArrayList<>();
         List<Registrable> vehiculos = new ArrayList<>();
         List<Registrable> colaboradores = new ArrayList<>();
         List<Registrable> servicios = new ArrayList<>();
 
-        // Clasificamos cada entidad de la lista original
+
         for (Registrable entidad : gestor.getListaEntidades()) {
             if (entidad instanceof GuiaTuristico) {
                 guias.add(entidad);
@@ -183,14 +183,14 @@ public class MenuGUI extends JFrame {
             }
         }
 
-        // Unificamos las listas manteniendo un orden estricto de visualización
+
         List<Registrable> listaOrdenada = new ArrayList<>();
         listaOrdenada.addAll(guias);
         listaOrdenada.addAll(vehiculos);
         listaOrdenada.addAll(colaboradores);
         listaOrdenada.addAll(servicios);
 
-        // Poblamos la tabla con el conjunto ordenado
+
         for (Registrable entidad : listaOrdenada) {
             String tipo = "";
             String nombreModelo = "";

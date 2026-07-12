@@ -123,9 +123,9 @@ public class GestorEntidades {
     }
 
     public void desplegarResumenEntidades() {
-        System.out.println("\n==========================================================================");
-        System.out.println("                LLANQUIHUE TOUR - REGISTRO GENERAL UNIFICADO              ");
-        System.out.println("                     (Monitoreo por Consola Activo)                       ");
+        System.out.println("==========================================================================");
+        System.out.println("                LLANQUIHUE TOUR - CATÁLOGO DE SERVICIOS                   ");
+        System.out.println("         (Rutas y sabores de la región, para toda la familia).            ");
         System.out.println("==========================================================================");
 
         for (Registrable entidad : listaEntidades) {
