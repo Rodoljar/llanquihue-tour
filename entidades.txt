@@ -6,4 +6,4 @@ COLABORADOR,Restaurante El Fogón,+5665223344,Sabores Llanquihue
 RUTA_GASTRO,Circuito postres de Frutillar,18000,4
 EXCURSION_CULT,Ruta de los Colonos Alemanes,30000,Museo Antonio Felmer
 COLABORADOR,Barco El Caleuche,9666666666,Trauco
-
+PASEO_LACUSTRE,Paseo Lacustre,35000,El Caleuche

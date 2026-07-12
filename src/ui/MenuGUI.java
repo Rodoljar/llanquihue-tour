@@ -59,11 +59,13 @@ public class MenuGUI extends JFrame {
 
         JButton btnAddGuide = new JButton("Agregar Guía");
         JButton btnAddVehicle = new JButton("Agregar Vehículo");
+        JButton btnAddLacustre = new JButton("Agregar Tour");
         JButton btnDelete = new JButton("Eliminar Registro");
         JButton btnExit = new JButton("Salir");
 
         btnAddGuide.setFont(new Font("Arial", Font.BOLD, 14));
         btnAddVehicle.setFont(new Font("Arial", Font.BOLD, 14));
+        btnAddLacustre.setFont(new Font("Arial", Font.BOLD, 14)); // Estilo unificado
         btnDelete.setFont(new Font("Arial", Font.BOLD, 14));
         btnDelete.setBackground(new Color(220, 53, 69));
         btnDelete.setForeground(Color.WHITE);
@@ -73,6 +75,7 @@ public class MenuGUI extends JFrame {
 
         panelButtons.add(btnAddGuide);
         panelButtons.add(btnAddVehicle);
+        panelButtons.add(btnAddLacustre); // <-- Agregado al panel visual
         panelButtons.add(btnDelete);
         panelButtons.add(btnExit);
 
@@ -169,6 +172,35 @@ public class MenuGUI extends JFrame {
             }
         });
 
+        // ACTION LISTENER PARA EL NUEVO PASEO LACUSTRE
+        btnAddLacustre.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nombre = JOptionPane.showInputDialog(MenuGUI.this, "Nombre de la Navegación / Paseo:");
+                if (nombre == null || nombre.trim().isEmpty()) return;
+
+                String precioStr = JOptionPane.showInputDialog(MenuGUI.this, "Precio de la Actividad ($):");
+                if (precioStr == null || precioStr.trim().isEmpty()) return;
+
+                String embarcacion = JOptionPane.showInputDialog(MenuGUI.this, "Nombre de la Embarcación / Bote:");
+                if (embarcacion == null || embarcacion.trim().isEmpty()) return;
+
+                try {
+                    int precio = Integer.parseInt(precioStr);
+                    // Usamos un guía base por defecto para el servicio comercial enlazado
+                    GuiaTuristico guiaGenerico = new GuiaTuristico("Guía General", "+56900000000", "Varios", "Varios");
+
+                    // Inicializamos el Paseo Lacustre (4 horas estimadas estándar de duración)
+                    PaseoLacustre nuevoPaseo = new PaseoLacustre(nombre, 4, precio, guiaGenerico, embarcacion);
+
+                    gestor.agregarEntidad(nuevoPaseo);
+                    actualizarTabla();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(MenuGUI.this, "El precio ingresado debe ser un valor numérico.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
         btnDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -184,6 +216,15 @@ public class MenuGUI extends JFrame {
                                 aEliminar = ent;
                                 break;
                             } else if (ent instanceof Vehiculo && ((Vehiculo) ent).getModelo().equals(patenteONombre)) {
+                                aEliminar = ent;
+                                break;
+                            } else if (ent instanceof PaseoLacustre && ((PaseoLacustre) ent).getNombre().equals(patenteONombre)) {
+                                aEliminar = ent;
+                                break;
+                            } else if (ent instanceof RutaGastronomica && ((RutaGastronomica) ent).getNombre().equals(patenteONombre)) {
+                                aEliminar = ent;
+                                break;
+                            } else if (ent instanceof ExcursionCultural && ((ExcursionCultural) ent).getNombre().equals(patenteONombre)) {
                                 aEliminar = ent;
                                 break;
                             }
