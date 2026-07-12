@@ -59,13 +59,13 @@ public class MenuGUI extends JFrame {
 
         JButton btnAddGuide = new JButton("Agregar Guía");
         JButton btnAddVehicle = new JButton("Agregar Vehículo");
-        JButton btnAddLacustre = new JButton("Agregar Tour");
+        JButton btnAddTour = new JButton("Agregar Tour"); // Botón polivalente e inteligente
         JButton btnDelete = new JButton("Eliminar Registro");
         JButton btnExit = new JButton("Salir");
 
         btnAddGuide.setFont(new Font("Arial", Font.BOLD, 14));
         btnAddVehicle.setFont(new Font("Arial", Font.BOLD, 14));
-        btnAddLacustre.setFont(new Font("Arial", Font.BOLD, 14)); // Estilo unificado
+        btnAddTour.setFont(new Font("Arial", Font.BOLD, 14));
         btnDelete.setFont(new Font("Arial", Font.BOLD, 14));
         btnDelete.setBackground(new Color(220, 53, 69));
         btnDelete.setForeground(Color.WHITE);
@@ -75,7 +75,7 @@ public class MenuGUI extends JFrame {
 
         panelButtons.add(btnAddGuide);
         panelButtons.add(btnAddVehicle);
-        panelButtons.add(btnAddLacustre); // <-- Agregado al panel visual
+        panelButtons.add(btnAddTour);
         panelButtons.add(btnDelete);
         panelButtons.add(btnExit);
 
@@ -172,31 +172,60 @@ public class MenuGUI extends JFrame {
             }
         });
 
-        // ACTION LISTENER PARA EL NUEVO PASEO LACUSTRE
-        btnAddLacustre.addActionListener(new ActionListener() {
+        // ACTION LISTENER DINÁMICO PARA AGREGAR CUALQUIER TIPO DE TOUR
+        btnAddTour.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre = JOptionPane.showInputDialog(MenuGUI.this, "Nombre de la Navegación / Paseo:");
+                String[] opciones = {"Paseo Lacustre", "Ruta Gastronómica", "Excursión Cultural"};
+                String seleccion = (String) JOptionPane.showInputDialog(
+                        MenuGUI.this,
+                        "Seleccione el Tipo de Tour que desea agregar:",
+                        "Tipo de Actividad",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        opciones,
+                        opciones[0]
+                );
+
+                if (seleccion == null) return; // Si cancela la selección, salimos
+
+                String nombre = JOptionPane.showInputDialog(MenuGUI.this, "Nombre de la Actividad / Tour:");
                 if (nombre == null || nombre.trim().isEmpty()) return;
 
                 String precioStr = JOptionPane.showInputDialog(MenuGUI.this, "Precio de la Actividad ($):");
                 if (precioStr == null || precioStr.trim().isEmpty()) return;
 
-                String embarcacion = JOptionPane.showInputDialog(MenuGUI.this, "Nombre de la Embarcación / Bote:");
-                if (embarcacion == null || embarcacion.trim().isEmpty()) return;
-
                 try {
                     int precio = Integer.parseInt(precioStr);
-                    // Usamos un guía base por defecto para el servicio comercial enlazado
                     GuiaTuristico guiaGenerico = new GuiaTuristico("Guía General", "+56900000000", "Varios", "Varios");
 
-                    // Inicializamos el Paseo Lacustre (4 horas estimadas estándar de duración)
-                    PaseoLacustre nuevoPaseo = new PaseoLacustre(nombre, 4, precio, guiaGenerico, embarcacion);
+                    if (seleccion.equals("Paseo Lacustre")) {
+                        String embarcacion = JOptionPane.showInputDialog(MenuGUI.this, "Nombre de la Embarcación / Bote:");
+                        if (embarcacion == null || embarcacion.trim().isEmpty()) return;
 
-                    gestor.agregarEntidad(nuevoPaseo);
+                        PaseoLacustre nuevoPaseo = new PaseoLacustre(nombre, 4, precio, guiaGenerico, embarcacion);
+                        gestor.agregarEntidad(nuevoPaseo);
+
+                    } else if (seleccion.equals("Ruta Gastronómica")) {
+                        String paradasStr = JOptionPane.showInputDialog(MenuGUI.this, "Cantidad de paradas gastronómicas:");
+                        if (paradasStr == null || paradasStr.trim().isEmpty()) return;
+                        int paradas = Integer.parseInt(paradasStr);
+
+                        RutaGastronomica nuevaRuta = new RutaGastronomica(nombre, 3, precio, guiaGenerico, paradas);
+                        gestor.agregarEntidad(nuevaRuta);
+
+                    } else if (seleccion.equals("Excursión Cultural")) {
+                        String lugar = JOptionPane.showInputDialog(MenuGUI.this, "Lugar histórico o Museo a visitar:");
+                        if (lugar == null || lugar.trim().isEmpty()) return;
+
+                        ExcursionCultural nuevaExcursion = new ExcursionCultural(nombre, 5, precio, guiaGenerico, lugar);
+                        gestor.agregarEntidad(nuevaExcursion);
+                    }
+
                     actualizarTabla();
+
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(MenuGUI.this, "El precio ingresado debe ser un valor numérico.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(MenuGUI.this, "Los campos numéricos (precio/paradas) deben ser válidos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
