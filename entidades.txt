@@ -4,6 +4,6 @@ VEHICULO,HG-DF-88,Hyundai H1,11
 VEHICULO,BB-CC-11,Mercedes Sprinter,19
 COLABORADOR,Restaurante El Fogón,+5665223344,Sabores Llanquihue
 RUTA_GASTRO,Circuito postres de Frutillar,18000,4
-PASEO_LACUSTRE,Navegación a isla Friendship,45000,El Caleuche
 EXCURSION_CULT,Ruta de los Colonos Alemanes,30000,Museo Antonio Felmer
 COLABORADOR,Barco El Caleuche,9666666666,Trauco
+

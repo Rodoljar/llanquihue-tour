@@ -79,10 +79,11 @@ public class MenuGUI extends JFrame {
 
 
         //NUEVO MÓDULO INFERIOR DE COLABORADORES
-
         JPanel panelColaboradores = new JPanel(new BorderLayout(5, 5));
+
+        // MODIFICACIÓN VISUAL: Subimos de 25 a 65 píxeles el margen superior para empujar el panel hacia abajo
         panelColaboradores.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0, 15, 15, 15),
+                BorderFactory.createEmptyBorder(65, 15, 15, 15),
                 BorderFactory.createTitledBorder("Módulo de Colaboradores Externos (Soporte Operacional)")
         ));
 
@@ -244,7 +245,8 @@ public class MenuGUI extends JFrame {
                         if (ent instanceof ColaboradorExterno) {
                             ColaboradorExterno c = (ColaboradorExterno) ent;
 
-                            if (itemSeleccionado.contains(c.getNombre())) {
+                            // Comparamos los nombres pasando ambos strings a minúsculas
+                            if (itemSeleccionado.toLowerCase().contains(c.getNombre().toLowerCase())) {
                                 colabEliminar = ent;
                                 break;
                             }
@@ -254,6 +256,7 @@ public class MenuGUI extends JFrame {
                     if (colabEliminar != null) {
                         gestor.getListaEntidades().remove(colabEliminar);
 
+                        // Forzamos la actualización de la persistencia de datos (.txt)
                         gestor.agregarEntidad(null);
                         gestor.getListaEntidades().remove(null);
                         actualizarTabla();
