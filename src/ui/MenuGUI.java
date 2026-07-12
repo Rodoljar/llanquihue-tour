@@ -15,10 +15,14 @@ public class MenuGUI extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
 
+    // Componentes globales para el módulo inferior de colaboradores
+    private DefaultListModel<String> modeloColaboradores = new DefaultListModel<>();
+    private JList<String> listaColaboradoresGui = new JList<>(modeloColaboradores);
+
     public MenuGUI(GestorEntidades gestor) {
         this.gestor = gestor;
-        setTitle("Llanquihue Tour - Panel de Operaciones");
-        setSize(1000, 600);
+        setTitle("Llanquihue Tour - Panel de Operations");
+        setSize(1000, 750); // Incrementamos la altura para acomodar el nuevo panel cómodamente
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -42,14 +46,15 @@ public class MenuGUI extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.getColumnModel().getColumn(0).setPreferredWidth(130); // Tipo de Entidad
         table.getColumnModel().getColumn(1).setPreferredWidth(180); // Nombre / Modelo
-        table.getColumnModel().getColumn(2).setPreferredWidth(420); // ¡Mucho más espacio para los detalles!
-        table.getColumnModel().getColumn(3).setPreferredWidth(250); // Alertas y Recomendaciones
+        table.getColumnModel().getColumn(2).setPreferredWidth(420); // Detalles
+        table.getColumnModel().getColumn(3).setPreferredWidth(250); // Alertas
         // ----------------------------------------------
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
         add(scrollPane, BorderLayout.CENTER);
 
+        // --- PANEL DE BOTONES PRINCIPALES (EXISTENTES) ---
         JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
 
         JButton btnAddGuide = new JButton("Agregar Guía");
@@ -70,7 +75,56 @@ public class MenuGUI extends JFrame {
         panelButtons.add(btnAddVehicle);
         panelButtons.add(btnDelete);
         panelButtons.add(btnExit);
-        add(panelButtons, BorderLayout.SOUTH);
+
+
+        // =========================================================================
+        //                 NUEVO MÓDULO INFERIOR DE COLABORADORES
+        // =========================================================================
+        JPanel panelColaboradores = new JPanel(new BorderLayout(5, 5));
+        panelColaboradores.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(0, 15, 15, 15),
+                BorderFactory.createTitledBorder("Módulo de Colaboradores Externos (Soporte Operacional)")
+        ));
+
+        // Formulario de campos de texto
+        JPanel formularioColab = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        JTextField txtNom = new JTextField(10);
+        JTextField txtTel = new JTextField(9);
+        JTextField txtEmp = new JTextField(10);
+        JButton btnAddColab = new JButton("Registrar Colaborador");
+        JButton btnDelColab = new JButton("Quitar Colaborador");
+
+        btnAddColab.setFont(new Font("Arial", Font.BOLD, 12));
+        btnDelColab.setFont(new Font("Arial", Font.BOLD, 12));
+
+        formularioColab.add(new JLabel("Nombre:"));
+        formularioColab.add(txtNom);
+        formularioColab.add(new JLabel("Fono:"));
+        formularioColab.add(txtTel);
+        formularioColab.add(new JLabel("Empresa:"));
+        formularioColab.add(txtEmp);
+        formularioColab.add(btnAddColab);
+        formularioColab.add(btnDelColab);
+
+        panelColaboradores.add(formularioColab, BorderLayout.NORTH);
+
+        // Lista visual en Scroll
+        listaColaboradoresGui.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollColab = new JScrollPane(listaColaboradoresGui);
+        scrollColab.setPreferredSize(new Dimension(200, 80));
+        panelColaboradores.add(scrollColab, BorderLayout.CENTER);
+
+
+        // --- ENSAMBLADO EN LA ZONA SUR (SOUTH) ---
+        JPanel panelSurContenedor = new JPanel(new BorderLayout());
+        panelSurContenedor.add(panelButtons, BorderLayout.NORTH);
+        panelSurContenedor.add(panelColaboradores, BorderLayout.SOUTH);
+        add(panelSurContenedor, BorderLayout.SOUTH);
+
+
+        // =========================================================================
+        //                         LÓGICA DE EVENTOS (LISTENERS)
+        // =========================================================================
 
         btnAddGuide.addActionListener(new ActionListener() {
             @Override
@@ -123,7 +177,6 @@ public class MenuGUI extends JFrame {
                 if (selectedRow >= 0) {
                     int confirm = JOptionPane.showConfirmDialog(MenuGUI.this, "¿Desea eliminar el registro seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
-                        // Buscamos el objeto real usando el modelo para evitar errores de desfase por el ordenamiento
                         String patenteONombre = (String) tableModel.getValueAt(selectedRow, 1);
                         Registrable aEliminar = null;
 
@@ -139,8 +192,10 @@ public class MenuGUI extends JFrame {
 
                         if (aEliminar != null) {
                             gestor.getListaEntidades().remove(aEliminar);
+                            // Forzamos el re-guardado automático para que se persista el borrado directo de la lista
+                            gestor.agregarEntidad(null);
+                            gestor.getListaEntidades().remove(null);
                         } else {
-                            // Resguardo por posición si es un servicio precargado
                             gestor.eliminarEntidad(selectedRow);
                         }
                         actualizarTabla();
@@ -158,18 +213,71 @@ public class MenuGUI extends JFrame {
             }
         });
 
+        // ACTION: REGISTRAR NUEVO COLABORADOR INTERNO
+        btnAddColab.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nombre = txtNom.getText().trim();
+                String fono = txtTel.getText().trim();
+                String empresa = txtEmp.getText().trim();
+
+                if (!nombre.isEmpty() && !fono.isEmpty() && !empresa.isEmpty()) {
+                    ColaboradorExterno nuevoColab = new ColaboradorExterno(nombre, fono, empresa);
+                    gestor.agregarEntidad(nuevoColab); // Guarda automáticamente en el TXT
+
+                    // Limpieza de campos
+                    txtNom.setText(""); txtTel.setText(""); txtEmp.setText("");
+                    actualizarTabla();
+                } else {
+                    JOptionPane.showMessageDialog(MenuGUI.this, "Por favor, complete todos los campos del colaborador.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
+        // ACTION: QUITAR COLABORADOR SELECCIONADO DE LA LISTA INFERIOR
+        btnDelColab.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedIndex = listaColaboradoresGui.getSelectedIndex();
+                if (selectedIndex >= 0) {
+                    String itemSeleccionado = listaColaboradoresGui.getSelectedValue();
+                    Registrable colabEliminar = null;
+
+                    for (Registrable ent : gestor.getListaEntidades()) {
+                        if (ent instanceof ColaboradorExterno) {
+                            ColaboradorExterno c = (ColaboradorExterno) ent;
+                            // Comparamos usando el nombre para dar con el elemento correcto
+                            if (itemSeleccionado.contains(c.getNombre())) {
+                                colabEliminar = ent;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (colabEliminar != null) {
+                        gestor.getListaEntidades().remove(colabEliminar);
+                        // Forzamos el guardado de la persistencia
+                        gestor.agregarEntidad(null);
+                        gestor.getListaEntidades().remove(null);
+                        actualizarTabla();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MenuGUI.this, "Seleccione un colaborador de la lista inferior para quitarlo.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        });
+
         actualizarTabla();
     }
 
     public void actualizarTabla() {
         tableModel.setRowCount(0);
-
+        modeloColaboradores.clear(); // Vaciamos la lista inferior antes de repintar
 
         List<Registrable> guias = new ArrayList<>();
         List<Registrable> vehiculos = new ArrayList<>();
         List<Registrable> colaboradores = new ArrayList<>();
         List<Registrable> servicios = new ArrayList<>();
-
 
         for (Registrable entidad : gestor.getListaEntidades()) {
             if (entidad instanceof GuiaTuristico) {
@@ -177,20 +285,25 @@ public class MenuGUI extends JFrame {
             } else if (entidad instanceof Vehiculo) {
                 vehiculos.add(entidad);
             } else if (entidad instanceof ColaboradorExterno) {
-                colaboradores.add(entidad);
+                colaboradores.add(entidad); // Se filtran para irse abajo
             } else {
                 servicios.add(entidad);
             }
         }
 
-
+        // Para la JTable superior solo unificamos Guías, Vehículos y Servicios
         List<Registrable> listaOrdenada = new ArrayList<>();
         listaOrdenada.addAll(guias);
         listaOrdenada.addAll(vehiculos);
-        listaOrdenada.addAll(colaboradores);
         listaOrdenada.addAll(servicios);
 
+        // 1. Llenamos la lista inferior de Colaboradores Externos
+        for (Registrable colab : colaboradores) {
+            ColaboradorExterno c = (ColaboradorExterno) colab;
+            modeloColaboradores.addElement(c.getNombre() + " | Empresa: " + c.getEmpresaAsociada() + " | Fono: " + c.getTelefono());
+        }
 
+        // 2. Llenamos la JTable superior de forma polimórfica
         for (Registrable entidad : listaOrdenada) {
             String tipo = "";
             String nombreModelo = "";
@@ -210,13 +323,6 @@ public class MenuGUI extends JFrame {
                 nombreModelo = v.getModelo();
                 detalles = "Patente: " + v.getPatente() + " | Capacidad: " + v.getCapacidadPasajeros() + " pasajeros";
                 alerta = v.getCapacidadPasajeros() > 15 ? "Requiere Licencia Profesional A2/A3" : "Licencia Clase B";
-            }
-            else if (entidad instanceof ColaboradorExterno) {
-                ColaboradorExterno c = (ColaboradorExterno) entidad;
-                tipo = "Colaborador Ext.";
-                nombreModelo = c.getNombre();
-                detalles = "Empresa: " + c.getEmpresaAsociada() + " | Fono: " + c.getTelefono();
-                alerta = "Revisar vigencia del convenio contractual";
             }
             else if (entidad instanceof RutaGastronomica) {
                 RutaGastronomica r = (RutaGastronomica) entidad;

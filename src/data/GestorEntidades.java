@@ -28,10 +28,14 @@ public class GestorEntidades {
         Vehiculo v1 = new Vehiculo("HG-DF-88", "Hyundai H1", 11);
         Vehiculo v2 = new Vehiculo("BB-CC-11", "Mercedes Sprinter", 19);
 
+        // Colaborador inicial de prueba
+        ColaboradorExterno c1 = new ColaboradorExterno("Restaurante El Fogón", "+5665223344", "Sabores Llanquihue");
+
         listaEntidades.add(g1);
         listaEntidades.add(g2);
         listaEntidades.add(v1);
         listaEntidades.add(v2);
+        listaEntidades.add(c1); // Se agrega a la lista general
 
         // Servicios iniciales (Polimorfismo)
         listaEntidades.add(new RutaGastronomica("Circuito postres de Frutillar", 3, 18000, g1, 4));
@@ -68,6 +72,9 @@ public class GestorEntidades {
                 } else if (ent instanceof Vehiculo) {
                     Vehiculo v = (Vehiculo) ent;
                     bw.write("VEHICULO," + v.getPatente() + "," + v.getModelo() + "," + v.getCapacidadPasajeros());
+                } else if (ent instanceof ColaboradorExterno) {
+                    ColaboradorExterno c = (ColaboradorExterno) ent;
+                    bw.write("COLABORADOR," + c.getNombre() + "," + c.getTelefono() + "," + c.getEmpresaAsociada());
                 } else if (ent instanceof RutaGastronomica) {
                     RutaGastronomica r = (RutaGastronomica) ent;
                     bw.write("RUTA_GASTRO," + r.getNombre() + "," + r.getPrecio() + "," + r.getNumeroDeParadas());
@@ -106,6 +113,9 @@ public class GestorEntidades {
                     case "VEHICULO":
                         listaEntidades.add(new Vehiculo(datos[1], datos[2], Integer.parseInt(datos[3])));
                         break;
+                    case "COLABORADOR":
+                        listaEntidades.add(new ColaboradorExterno(datos[1], datos[2], datos[3]));
+                        break;
                     case "RUTA_GASTRO":
                         listaEntidades.add(new RutaGastronomica(datos[1], 3, Integer.parseInt(datos[2]), guiaGenerico, Integer.parseInt(datos[3])));
                         break;
@@ -142,6 +152,8 @@ public class GestorEntidades {
                 System.out.println("   --> [TIPS]: Recordar a los clientes llevar efectivo para propinas opcionales.");
             } else if (entidad instanceof PaseoLacustre) {
                 System.out.println("   --> [SEGURIDAD]: Obligatorio el uso de chaleco salvavidas en toda la navegación.");
+            } else if (entidad instanceof ColaboradorExterno) {
+                System.out.println("   --> [LOGÍSTICA]: Confirmar disponibilidad de cupos con la empresa externa.");
             }
             System.out.println("--------------------------------------------------------------------------");
         }
