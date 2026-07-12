@@ -11,7 +11,7 @@ public class GestorEntidades {
 
     public GestorEntidades() {
         this.listaEntidades = new ArrayList<>();
-        // Intentamos cargar desde el archivo TXT; si está vacío o no existe, cargamos los de prueba
+        //  cargar desde el archivo TXT; si está vacío o no existe, cargamos los de prueba
         cargarDesdeTexto();
         if (this.listaEntidades.isEmpty()) {
             cargarDatosDePrueba();
@@ -35,7 +35,7 @@ public class GestorEntidades {
         listaEntidades.add(g2);
         listaEntidades.add(v1);
         listaEntidades.add(v2);
-        listaEntidades.add(c1); // Se agrega a la lista general
+        listaEntidades.add(c1);
 
         // Servicios iniciales (Polimorfismo)
         listaEntidades.add(new RutaGastronomica("Circuito postres de Frutillar", 3, 18000, g1, 4));
@@ -59,9 +59,8 @@ public class GestorEntidades {
         return listaEntidades;
     }
 
-    // ==========================================
+
     //   MÉTODOS DE PERSISTENCIA (LECTURA Y ESCRITURA)
-    // ==========================================
 
     private void guardarEnTexto() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO_TXT))) {
@@ -98,7 +97,7 @@ public class GestorEntidades {
 
         try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
             String linea;
-            // Usamos un guía comodín temporal por si los servicios guardados necesitan referencias
+
             GuiaTuristico guiaGenerico = new GuiaTuristico("Guía General", "+56900000000", "Varios", "Varios");
 
             while ((linea = br.readLine()) != null) {
