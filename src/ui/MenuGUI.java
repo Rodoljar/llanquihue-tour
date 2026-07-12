@@ -7,175 +7,242 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuGUI extends JFrame {
-    private GestorEntidades gestor = new GestorEntidades();
-    private JTable tabla;
-    private DefaultTableModel modeloTabla;
+    private GestorEntidades gestor;
+    private JTable table;
+    private DefaultTableModel tableModel;
 
-    public MenuGUI() {
+    public MenuGUI(GestorEntidades gestor) {
+        this.gestor = gestor;
         setTitle("Llanquihue Tour - Panel de Operaciones");
-        setSize(950, 500);
+        setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        JLabel lblTitulo = new JLabel("Panel de Control Unificado - Llanquihue Tour", JLabel.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
-        add(lblTitulo, BorderLayout.NORTH);
+        JLabel lblTitle = new JLabel("Panel de Control Unificado - Llanquihue Tour", JLabel.CENTER);
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 22));
+        lblTitle.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+        add(lblTitle, BorderLayout.NORTH);
 
-        String[] columnas = {"Tipo de Entidad", "Nombre / Modelo", "Detalles del Registro", "Alertas y Recomendaciones"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        String[] columns = {"Tipo de Entidad", "Nombre / Modelo", "Detalles del Registro", "Alertas y Recomendaciones"};
+        tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
+        table = new JTable(tableModel);
+        table.setRowHeight(24);
 
-        tabla = new JTable(modeloTabla);
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tabla.getTableHeader().setReorderingAllowed(false);
+        // --- CONFIGURACIÓN DE ANCHOS PROPORCIONALES ---
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getColumnModel().getColumn(0).setPreferredWidth(130); // Tipo de Entidad
+        table.getColumnModel().getColumn(1).setPreferredWidth(180); // Nombre / Modelo
+        table.getColumnModel().getColumn(2).setPreferredWidth(420); // ¡Mucho más espacio para los detalles!
+        table.getColumnModel().getColumn(3).setPreferredWidth(250); // Alertas y Recomendaciones
+        // ----------------------------------------------
 
-        JScrollPane scrollPane = new JScrollPane(tabla);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 15, 10, 15));
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
         add(scrollPane, BorderLayout.CENTER);
 
-        // PANEL DE BOTONES (Se agrega botón Salir)
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
 
-        JButton btnAgregarGuia = new JButton("Agregar Guía");
-        JButton btnAgregarVehiculo = new JButton("Agregar Vehículo");
-        JButton btnEliminar = new JButton("Eliminar Registro");
-        JButton btnSalir = new JButton("Salir"); // <-- Botón nuevo
+        JButton btnAddGuide = new JButton("Agregar Guía");
+        JButton btnAddVehicle = new JButton("Agregar Vehículo");
+        JButton btnDelete = new JButton("Eliminar Registro");
+        JButton btnExit = new JButton("Salir");
 
-        // Estilos de botones
-        btnEliminar.setBackground(new Color(220, 53, 69)); // Rojo
-        btnEliminar.setForeground(Color.WHITE);
-        btnEliminar.setFocusPainted(false);
+        btnAddGuide.setFont(new Font("Arial", Font.BOLD, 14));
+        btnAddVehicle.setFont(new Font("Arial", Font.BOLD, 14));
+        btnDelete.setFont(new Font("Arial", Font.BOLD, 14));
+        btnDelete.setBackground(new Color(220, 53, 69));
+        btnDelete.setForeground(Color.WHITE);
+        btnExit.setFont(new Font("Arial", Font.BOLD, 14));
+        btnExit.setBackground(new Color(108, 117, 125));
+        btnExit.setForeground(Color.WHITE);
 
-        btnSalir.setBackground(new Color(108, 117, 125)); // Gris oscuro profesional
-        btnSalir.setForeground(Color.WHITE);
-        btnSalir.setFocusPainted(false);
+        panelButtons.add(btnAddGuide);
+        panelButtons.add(btnAddVehicle);
+        panelButtons.add(btnDelete);
+        panelButtons.add(btnExit);
+        add(panelButtons, BorderLayout.SOUTH);
 
-        panelBotones.add(btnAgregarGuia);
-        panelBotones.add(btnAgregarVehiculo);
-        panelBotones.add(btnEliminar);
-        panelBotones.add(btnSalir); // <-- Agregado al panel visual
-        add(panelBotones, BorderLayout.SOUTH);
-
-        actualizarTabla();
-
-        // ACCIONADORES DE EVENTOS
-        btnAgregarGuia.addActionListener(new ActionListener() {
+        btnAddGuide.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre = JOptionPane.showInputDialog("Nombre completo del Guía:");
-                String telefono = JOptionPane.showInputDialog("Teléfono de contacto:");
-                if (nombre != null && !nombre.trim().isEmpty() && telefono != null) {
-                    gestor.agregarEntidad(new GuiaTuristico(nombre, telefono));
+                String nombre = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese Nombre del Guía:");
+                if (nombre == null || nombre.trim().isEmpty()) return;
+
+                String telefono = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese Teléfono de Contacto:");
+                if (telefono == null || telefono.trim().isEmpty()) return;
+
+                String tour = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese el Tour Asignado:");
+                if (tour == null || tour.trim().isEmpty()) return;
+
+                String vehiculo = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese el Vehículo a Cargo:");
+                if (vehiculo == null || vehiculo.trim().isEmpty()) return;
+
+                GuiaTuristico nuevoGuia = new GuiaTuristico(nombre, telefono, tour, vehiculo);
+                gestor.agregarEntidad(nuevoGuia);
+                actualizarTabla();
+            }
+        });
+
+        btnAddVehicle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String modelo = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese Modelo del Vehículo:");
+                if (modelo == null || modelo.trim().isEmpty()) return;
+
+                String patente = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese Patente:");
+                if (patente == null || patente.trim().isEmpty()) return;
+
+                String capStr = JOptionPane.showInputDialog(MenuGUI.this, "Ingrese Capacidad de Pasajeros:");
+                if (capStr == null || capStr.trim().isEmpty()) return;
+
+                try {
+                    int capacidad = Integer.parseInt(capStr);
+                    Vehiculo nuevoVehiculo = new Vehiculo(patente, modelo, capacidad);
+                    gestor.agregarEntidad(nuevoVehiculo);
                     actualizarTabla();
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(MenuGUI.this, "La capacidad debe ser un valor numérico.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
-        btnAgregarVehiculo.addActionListener(new ActionListener() {
+        btnDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String modelo = JOptionPane.showInputDialog("Modelo del Vehículo:");
-                String patente = JOptionPane.showInputDialog("Patente del Vehículo:");
-                String capStr = JOptionPane.showInputDialog("Capacidad máxima de pasajeros:");
-                if (modelo != null && patente != null && capStr != null) {
-                    try {
-                        int capacidad = Integer.parseInt(capStr);
-                        gestor.agregarEntidad(new Vehiculo(patente, modelo, capacidad));
-                        actualizarTabla();
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(null, "Error: La capacidad debe ser un número válido.");
-                    }
-                }
-            }
-        });
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow >= 0) {
+                    int confirm = JOptionPane.showConfirmDialog(MenuGUI.this, "¿Desea eliminar el registro seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        // Buscamos el objeto real usando el modelo para evitar errores de desfase por el ordenamiento
+                        String patenteONombre = (String) tableModel.getValueAt(selectedRow, 1);
+                        Registrable aEliminar = null;
 
-        btnEliminar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int filaSeleccionada = tabla.getSelectedRow();
-                if (filaSeleccionada >= 0) {
-                    int respuesta = JOptionPane.showConfirmDialog(null,
-                            "¿Está seguro de que desea eliminar la fila seleccionada?",
-                            "Confirmar Acción", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-                    if (respuesta == JOptionPane.YES_OPTION) {
-                        gestor.eliminarEntidad(filaSeleccionada);
+                        for (Registrable ent : gestor.getListaEntidades()) {
+                            if (ent instanceof GuiaTuristico && ((GuiaTuristico) ent).getNombre().equals(patenteONombre)) {
+                                aEliminar = ent;
+                                break;
+                            } else if (ent instanceof Vehiculo && ((Vehiculo) ent).getModelo().equals(patenteONombre)) {
+                                aEliminar = ent;
+                                break;
+                            }
+                        }
+
+                        if (aEliminar != null) {
+                            gestor.getListaEntidades().remove(aEliminar);
+                        } else {
+                            // Resguardo por posición si es un servicio precargado
+                            gestor.eliminarEntidad(selectedRow);
+                        }
                         actualizarTabla();
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar una fila de la tabla para poder eliminarla.");
+                    JOptionPane.showMessageDialog(MenuGUI.this, "Por favor, seleccione una fila de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
                 }
             }
         });
 
-        // Evento Botón Salir
-        btnSalir.addActionListener(new ActionListener() {
+        btnExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0); // Cierra toda la aplicación de manera segura
+                System.exit(0);
             }
         });
+
+        actualizarTabla();
     }
 
-    public void iniciar() {
-        setVisible(true);
-    }
+    public void actualizarTabla() {
+        tableModel.setRowCount(0);
 
-    private void actualizarTabla() {
-        gestor.desplegarResumenEntidades(); // Sigue imprimiendo en consola simultáneamente
-        modeloTabla.setRowCount(0);
+        // Listas auxiliares para separar por categorías y forzar un orden visual limpio
+        List<Registrable> guias = new ArrayList<>();
+        List<Registrable> vehiculos = new ArrayList<>();
+        List<Registrable> colaboradores = new ArrayList<>();
+        List<Registrable> servicios = new ArrayList<>();
 
+        // Clasificamos cada entidad de la lista original
         for (Registrable entidad : gestor.getListaEntidades()) {
+            if (entidad instanceof GuiaTuristico) {
+                guias.add(entidad);
+            } else if (entidad instanceof Vehiculo) {
+                vehiculos.add(entidad);
+            } else if (entidad instanceof ColaboradorExterno) {
+                colaboradores.add(entidad);
+            } else {
+                servicios.add(entidad);
+            }
+        }
+
+        // Unificamos las listas manteniendo un orden estricto de visualización
+        List<Registrable> listaOrdenada = new ArrayList<>();
+        listaOrdenada.addAll(guias);
+        listaOrdenada.addAll(vehiculos);
+        listaOrdenada.addAll(colaboradores);
+        listaOrdenada.addAll(servicios);
+
+        // Poblamos la tabla con el conjunto ordenado
+        for (Registrable entidad : listaOrdenada) {
             String tipo = "";
             String nombreModelo = "";
             String detalles = "";
-            String alertaRecomendacion = "-";
+            String alerta = "";
 
             if (entidad instanceof GuiaTuristico) {
                 GuiaTuristico g = (GuiaTuristico) entidad;
                 tipo = "Guía";
                 nombreModelo = g.getNombre();
-                detalles = "Contacto: " + g.getTelefono();
-                alertaRecomendacion = "Credencial Sernatur Activa";
-            } else if (entidad instanceof Vehiculo) {
+                detalles = "Contacto: " + g.getTelefono() + " | Tour: " + g.getTourAsignado() + " | Vehículo: " + g.getVehiculoAsignado();
+                alerta = "Credencial Sernatur Activa";
+            }
+            else if (entidad instanceof Vehiculo) {
                 Vehiculo v = (Vehiculo) entidad;
                 tipo = "Vehículo";
                 nombreModelo = v.getModelo();
                 detalles = "Patente: " + v.getPatente() + " | Capacidad: " + v.getCapacidadPasajeros() + " pasajeros";
-                alertaRecomendacion = v.getCapacidadPasajeros() > 15 ? "Requiere Licencia Profesional A2/A3" : "Licencia Clase B";
-            } else if (entidad instanceof ColaboradorExterno) {
+                alerta = v.getCapacidadPasajeros() > 15 ? "Requiere Licencia Profesional A2/A3" : "Licencia Clase B";
+            }
+            else if (entidad instanceof ColaboradorExterno) {
                 ColaboradorExterno c = (ColaboradorExterno) entidad;
                 tipo = "Colaborador Ext.";
                 nombreModelo = c.getNombre();
                 detalles = "Empresa: " + c.getEmpresaAsociada() + " | Fono: " + c.getTelefono();
-                alertaRecomendacion = "Revisar vigencia del convenio contractual";
-            } else if (entidad instanceof RutaGastronomica) {
+                alerta = "Revisar vigencia del convenio contractual";
+            }
+            else if (entidad instanceof RutaGastronomica) {
                 RutaGastronomica r = (RutaGastronomica) entidad;
                 tipo = "Ruta Gastronómica";
                 nombreModelo = r.getNombre();
-                detalles = "Valor: $" + r.getPrecio() + " | Paradas: " + r.getNumeroDeParadas() + " | Guía: " + (r.getGuia() != null ? r.getGuia().getNombre() : "Sin asignar");
-                alertaRecomendacion = "TIPS: Llevar efectivo para propinas opcionales";
-            } else if (entidad instanceof PaseoLacustre) {
+                detalles = "Valor: $" + r.getPrecio() + " | Paradas: " + r.getNumeroDeParadas() + " | Guía: " + (r.getGuia() != null ? r.getGuia().getNombre() : "Sin guía");
+                alerta = "TIPS: Llevar efectivo para propinas o consumos extras";
+            }
+            else if (entidad instanceof PaseoLacustre) {
                 PaseoLacustre p = (PaseoLacustre) entidad;
                 tipo = "Paseo Lacustre";
                 nombreModelo = p.getNombre();
-                detalles = "Valor: $" + p.getPrecio() + " | Embarcación: " + p.getTipoEmbarcacion() + " | Guía: " + (p.getGuia() != null ? p.getGuia().getNombre() : "Sin asignar");
-                alertaRecomendacion = "SEGURIDAD: Uso obligatorio de chaleco salvavidas";
-            } else if (entidad instanceof ExcursionCultural) {
-                ExcursionCultural ex = (ExcursionCultural) entidad;
-                tipo = "Excursión Cultural";
-                nombreModelo = ex.getNombre();
-                detalles = "Valor: $" + ex.getPrecio() + " | Sitio: " + ex.getLugarHistorico() + " | Guía: " + (ex.getGuia() != null ? ex.getGuia().getNombre() : "Sin asignar");
-                alertaRecomendacion = "Ticket de ingreso incluido en el servicio";
+                detalles = "Valor: $" + p.getPrecio() + " | Embarcación: " + p.getTipoEmbarcacion();
+                alerta = "SEGURIDAD: Uso obligatorio de chaleco salvavidas";
             }
-            modeloTabla.addRow(new Object[]{tipo, nombreModelo, detalles, alertaRecomendacion});
+            else if (entidad instanceof ExcursionCultural) {
+                ExcursionCultural ec = (ExcursionCultural) entidad;
+                tipo = "Excursión Cultural";
+                nombreModelo = ec.getNombre();
+                detalles = "Valor: $" + ec.getPrecio() + " | Sitio: " + ec.getLugarHistorico();
+                alerta = "Ticket de ingreso incluido en el servicio";
+            }
+
+            tableModel.addRow(new Object[]{tipo, nombreModelo, detalles, alerta});
         }
+
+        gestor.desplegarResumenEntidades();
     }
 }

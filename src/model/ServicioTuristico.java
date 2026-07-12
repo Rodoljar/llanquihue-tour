@@ -13,9 +13,9 @@ public class ServicioTuristico implements Registrable {
         this.guia = guia;
     }
 
-    // ==========================================
-    // GETTERS Y SETTERS (Restaurados completamente)
-    // ==========================================
+
+    // GETTERS Y SETTERS
+
     public String getNombre() {
         return nombre;
     }
@@ -48,9 +48,9 @@ public class ServicioTuristico implements Registrable {
         this.guia = guia;
     }
 
-    // ==========================================
+
     // MÉTODOS DE COMPORTAMIENTO
-    // ==========================================
+
     @Override
     public String toString() {
         return "Nombre: " + nombre + " | Duración: " + duracionHoras + " hrs | Precio: $" + precio + " | Guía: " + guia;

@@ -1,9 +1,14 @@
 package ui;
 
+import data.GestorEntidades;
+
 public class Main {
     public static void main(String[] args) {
-        // Ejecutamos la pantalla de entrada en lugar del menú directo
-        WelcomeGUI bienvenida = new WelcomeGUI();
+
+        GestorEntidades gestor = new GestorEntidades();
+
+
+        WelcomeGUI bienvenida = new WelcomeGUI(gestor);
         bienvenida.setVisible(true);
     }
 }
