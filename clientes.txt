@@ -1,0 +1,3 @@
+Carlos Fuentes, 15.632.784-K, Avenida Providencia, 1420, Providencia, 4532987612345678, Visa
+Ana Maria Silva, 18.421.359-3, Gran Avenida, 5500, San Miguel, 5214963287412563, Mastercard
+Pedro Soto, 12.894.221-4, Pajaritos, 2150, Maipu, 1234, Redcompra

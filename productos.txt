@@ -1,0 +1,4 @@
+TOUR001, Tour Full Day Frutillar y Saltos del Petrohue, 45000
+TOUR002, Ascension Guiada Volcan Osorno, 85000
+TOUR003, Navegacion Lago Todos los Santos, 35000
+TOUR004, Circuito Trekking Parque Alerce Andino, 55000
